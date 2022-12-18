@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group</OriginalElement>
+  <nodes>
+    <node x="46.5" y="809.9426229508197">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user_groups</node>
+    <node x="366.0" y="1222.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_permission</node>
+    <node x="372.0" y="741.905737704918">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.authtoken_token</node>
+    <node x="383.0" y="521.6721311475409">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_tag</node>
+    <node x="348.0" y="894.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_admin_log</node>
+    <node x="643.5" y="416.74999999999994">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user</node>
+    <node x="3.0" y="1078.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user_user_permissions</node>
+    <node x="613.6833976833976" y="1323.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.sqlite_master</node>
+    <node x="383.0" y="1124.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group</node>
+    <node x="2.0" y="133.25">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_ingredientamount</node>
+    <node x="613.6833976833976" y="1344.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_migrations</node>
+    <node x="24.5" y="678.9426229508197">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_shoppinglist</node>
+    <node x="44.0" y="558.9426229508197">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_favorite</node>
+    <node x="0.0" y="1389.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.sqlite_sequence</node>
+    <node x="18.5" y="1217.0">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group_permissions</node>
+    <node x="372.0" y="215.67213114754088">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe</node>
+    <node x="29.0" y="346.9221311475409">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe_tags</node>
+    <node x="0.0" y="0.0">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe_ingredients</node>
+    <node x="339.0" y="43.676229508196684">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_ingredient</node>
+    <node x="632.0" y="1108.655737704918">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_content_type</node>
+    <node x="371.5" y="401.6721311475409">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_follow</node>
+    <node x="614.6833976833976" y="1366.1762295081967">a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_session</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_admin_log" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="111.5" y="-52.5" />
+      <point x="601.0" y="946.6762295081967" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe_tags" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe" relationship="REFERENCES">
+      <point x="109.5" y="-25.0" />
+      <point x="298.0" y="371.9221311475409" />
+      <point x="298.0" y="298.6721311475409" />
+      <point x="-87.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_permission" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_content_type" relationship="REFERENCES">
+      <point x="93.5" y="-0.0" />
+      <point x="601.0" y="1283.1762295081967" />
+      <point x="601.0" y="1158.655737704918" />
+      <point x="-103.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_ingredientamount" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_ingredient" relationship="REFERENCES">
+      <point x="136.5" y="-30.5" />
+      <point x="308.0" y="163.75" />
+      <point x="308.0" y="93.67622950819668" />
+      <point x="-120.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user_groups" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group" relationship="REFERENCES">
+      <point x="92.0" y="25.0" />
+      <point x="308.0" y="884.9426229508197" />
+      <point x="308.0" y="1163.1762295081967" />
+      <point x="-76.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe_ingredients" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_ingredient" relationship="REFERENCES">
+      <point x="138.5" y="-25.0" />
+      <point x="308.0" y="25.0" />
+      <point x="308.0" y="93.67622950819668" />
+      <point x="-120.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group_permissions" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group" relationship="REFERENCES">
+      <point x="120.0" y="-25.0" />
+      <point x="308.0" y="1242.0" />
+      <point x="308.0" y="1163.1762295081967" />
+      <point x="-76.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_follow" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="88.0" y="25.0" />
+      <point x="601.0" y="476.6721311475409" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user_user_permissions" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_permission" relationship="REFERENCES">
+      <point x="135.5" y="25.0" />
+      <point x="298.0" y="1153.1762295081967" />
+      <point x="298.0" y="1283.1762295081967" />
+      <point x="-93.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_favorite" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe" relationship="REFERENCES">
+      <point x="94.5" y="-25.0" />
+      <point x="298.0" y="583.9426229508197" />
+      <point x="298.0" y="298.6721311475409" />
+      <point x="-87.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_favorite" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="94.5" y="25.0" />
+      <point x="308.0" y="633.9426229508197" />
+      <point x="308.0" y="654.1721311475409" />
+      <point x="601.0" y="654.1721311475409" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe_tags" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_tag" relationship="REFERENCES">
+      <point x="109.5" y="25.0" />
+      <point x="308.0" y="421.9221311475409" />
+      <point x="308.0" y="582.6721311475409" />
+      <point x="-76.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_ingredientamount" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe" relationship="REFERENCES">
+      <point x="136.5" y="30.5" />
+      <point x="298.0" y="224.75" />
+      <point x="298.0" y="298.6721311475409" />
+      <point x="-87.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.authtoken_token" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="87.5" y="-0.0" />
+      <point x="601.0" y="791.905737704918" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_group_permissions" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_permission" relationship="REFERENCES">
+      <point x="120.0" y="25.0" />
+      <point x="298.0" y="1292.0" />
+      <point x="298.0" y="1283.1762295081967" />
+      <point x="-93.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="87.5" y="-0.0" />
+      <point x="601.0" y="298.6721311475409" />
+      <point x="601.0" y="346.49999999999994" />
+      <point x="611.0" y="346.49999999999994" />
+      <point x="611.0" y="485.74999999999994" />
+      <point x="-92.0" y="-69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user_user_permissions" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="135.5" y="-25.0" />
+      <point x="318.0" y="1103.1762295081967" />
+      <point x="318.0" y="883.6762295081967" />
+      <point x="601.0" y="883.6762295081967" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_admin_log" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_content_type" relationship="REFERENCES">
+      <point x="111.5" y="52.5" />
+      <point x="601.0" y="1051.6762295081967" />
+      <point x="601.0" y="1158.655737704918" />
+      <point x="-103.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user_groups" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="92.0" y="-25.0" />
+      <point x="298.0" y="834.9426229508197" />
+      <point x="298.0" y="852.405737704918" />
+      <point x="601.0" y="852.405737704918" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_shoppinglist" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe" relationship="REFERENCES">
+      <point x="114.0" y="-25.0" />
+      <point x="298.0" y="703.9426229508197" />
+      <point x="298.0" y="298.6721311475409" />
+      <point x="-87.5" y="-0.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_shoppinglist" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.auth_user" relationship="REFERENCES">
+      <point x="114.0" y="25.0" />
+      <point x="298.0" y="753.9426229508197" />
+      <point x="298.0" y="731.405737704918" />
+      <point x="601.0" y="731.405737704918" />
+      <point x="601.0" y="797.0" />
+      <point x="611.0" y="797.0" />
+      <point x="611.0" y="623.75" />
+      <point x="-92.0" y="69.0" />
+    </edge>
+    <edge source="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe_ingredients" target="a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.foodgram_recipe" relationship="REFERENCES">
+      <point x="138.5" y="25.0" />
+      <point x="298.0" y="75.0" />
+      <point x="298.0" y="298.6721311475409" />
+      <point x="-87.5" y="-0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.6806833114323259" showDependencies="false" x="751.0" y="733.5" />
+  <SelectedNodes>
+    <node>a98c1d65-a9f6-4ef1-8081-6b979103f7cd.TABLE:main.django_session</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Columns</Category>
+    <Category>Comments</Category>
+    <Category>Key columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+
