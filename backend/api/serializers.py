@@ -1,25 +1,14 @@
-import base64
-
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
+from django.db.models import Exists
 from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import permissions, serializers
 
 from foodgram.models import (Favorite, Ingredient, IngredientAmount, Recipe,
-                             ShoppingList, Subscription, Tag)
+                             Subscription, Tag)
 from users.serializers import CustomUserSerializer
 
 User = get_user_model()
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -50,9 +39,11 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientsAmountSerializer(source='ingredientamount_set',
-                                              many=True,
-                                              read_only=True)
+    ingredients = IngredientsAmountSerializer(
+        source='ingredientamount_set',
+        many=True,
+        read_only=True
+    )
     image = Base64ImageField()
 
     class Meta:
@@ -66,13 +57,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Favorite.objects.filter(user=user, recipe=obj.id).exists()
+        return bool(Exists(obj.favorite.filter(user=user)).queryset)
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return ShoppingList.objects.filter(user=user, recipe=obj.id).exists()
+        return bool(Exists(obj.shopping_cart.filter(user=user)).queryset)
 
     def validate(self, data):
         data['author'] = self.context['request'].user
@@ -90,27 +81,30 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('ingredients must be list')
         valid_ingredients = []
         for ingredient in ingredients:
-            ingredient_object = get_object_or_404(Ingredient,
-                                                  id=ingredient.get('id'))
+            ingredient_object = get_object_or_404(
+                Ingredient,
+                id=ingredient.get('id')
+            )
             amount = int(ingredient.get('amount'))
             if not isinstance(amount, int) or amount < 1:
                 raise serializers.ValidationError('invalid amount')
             valid_ingredients.append(
-                {'ingredient': ingredient_object, 'amount': amount})
+                {'ingredient': ingredient_object, 'amount': amount}
+            )
         data['ingredients'] = valid_ingredients
-
         return data
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
-        for ingredient in ingredients:
-            IngredientAmount.objects.create(recipe=recipe,
-                                            ingredient=ingredient[
-                                                'ingredient'
-                                            ],
-                                            amount=ingredient['amount'])
+        IngredientAmount.objects.bulk_create([
+            IngredientAmount(
+                recipe=recipe,
+                ingredient=ingredient['ingredient'],
+                amount=ingredient['amount']
+            ) for ingredient in ingredients
+        ])
         recipe.tags.set(tags)
         return recipe
 
@@ -131,14 +125,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         if ingredients:
             instance.ingredients.clear()
             for ingredient in ingredients:
-                IngredientAmount.objects.get_or_create(recipe=instance,
-                                                       ingredient=ingredient[
-                                                           'ingredient'
-                                                       ],
-                                                       amount=ingredient[
-                                                           'amount'
-                                                       ])
-
+                IngredientAmount.objects.get_or_create(
+                    recipe=instance,
+                    ingredient=ingredient['ingredient'],
+                    amount=ingredient['amount']
+                )
         instance.save()
         return instance
 
@@ -172,10 +163,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
         user = obj.user
         if user.is_anonymous:
             return False
-        return Subscription.objects.filter(
+        return bool(Exists(Subscription.objects.filter(
             user=user,
             author=obj.author
-        ).exists()
+        )).queryset)
 
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(author=obj.author)

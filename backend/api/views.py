@@ -1,6 +1,7 @@
 import io
 
 from django.contrib.auth import get_user_model
+from django.db.models import Exists
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from reportlab.lib.pagesizes import A4
@@ -8,15 +9,15 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import permissions, status
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from foodgram.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                              ShoppingList, Subscription, Tag)
 
 from .filters import NameSearchFilter, RecipeFilter
-from .mixins import RetrieveListModelMixin
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnlyPermission
 from .serializers import (IngredientSerializer, RecipeSerializer,
@@ -26,14 +27,14 @@ from .serializers import (IngredientSerializer, RecipeSerializer,
 User = get_user_model()
 
 
-class TagViewSet(RetrieveListModelMixin):
+class TagViewSet(ReadOnlyModelViewSet):
     pagination_class = None
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class RecipeViewSet(ModelViewSet):
-    queryset = Recipe.objects.all().order_by('id')
+    queryset = Recipe.objects.prefetch_related('ingredients').order_by('id')
     serializer_class = RecipeSerializer
     filter_class = RecipeFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -87,25 +88,27 @@ class RecipeViewSet(ModelViewSet):
         )
 
     def add_obj(self, model, request, pk):
-        if not model.objects.filter(user=request.user,
-                                    recipe=pk).exists():
-            obj = model.objects.create(user=request.user,
-                                       recipe=get_object_or_404(Recipe,
-                                                                id=pk))
+        if not bool(Exists(model.objects.filter(
+                user=request.user,
+                recipe=pk
+        )).queryset):
+            obj = model.objects.create(
+                user=request.user,
+                recipe=get_object_or_404(Recipe, id=pk)
+            )
             serializer = ShortRecipeSerializer(obj.recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def del_obj(self, model, request, pk):
-        obj = model.objects.filter(user=request.user,
-                                   recipe=pk)
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        model.objects.filter(
+            user=request.user,
+            recipe=pk
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class IngredientViewSet(RetrieveListModelMixin):
+class IngredientViewSet(ReadOnlyModelViewSet):
     pagination_class = None
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
@@ -113,43 +116,51 @@ class IngredientViewSet(RetrieveListModelMixin):
     search_fields = ('name',)
 
 
-@api_view(['post', 'delete'])
-def subscribe_detail(request, pk):
-    author = get_object_or_404(User, id=pk)
-    user = request.user
-    if user.is_anonymous:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    subscription = Subscription.objects.filter(user=user,
-                                               author=author)
-    if request.method == 'POST':
-        if user == author or subscription.exists():
+class SubscribeDetail(APIView):
+
+    def post(self, request, pk):
+        author = get_object_or_404(User, id=pk)
+        user = request.user
+        if user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        subscription_exist = bool(Exists(Subscription.objects.filter(
+            user=user,
+            author=author
+        )).queryset)
+        if user == author or subscription_exist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        subscribe = Subscription.objects.create(user=user,
-                                                author=author)
-        serializer = SubscribeSerializer(subscribe,
-                                         context={'limit': request.GET.get(
-                                             'recipes_limit'
-                                         )})
+        subscribe = Subscription.objects.create(user=user, author=author)
+        serializer = SubscribeSerializer(
+            subscribe,
+            context={'limit': request.GET.get('recipes_limit')}
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    if subscription.exists():
+
+    def delete(self, request, pk):
+        author = get_object_or_404(User, id=pk)
+        user = request.user
+        if user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        subscription = Subscription.objects.filter(user=user, author=author)
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['get'])
-def subscriptions_list(request):
-    user = request.user
-    if user.is_anonymous:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    subscriptions = Subscription.objects.filter(user=user).order_by('id')
-    paginator = CustomPagination()
-    paginated_subscriptions = paginator.paginate_queryset(subscriptions,
-                                                          request)
-    serializer = SubscribeSerializer(paginated_subscriptions,
-                                     context={'limit': request.GET.get(
-                                         'recipes_limit'
-                                     )},
-                                     many=True)
-    return Response(paginator.get_paginated_response(serializer.data).data,
-                    status=status.HTTP_201_CREATED)
+class SubscriptionsList(APIView):
+    def get(self, request):
+        user = request.user
+        if user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        subscriptions = Subscription.objects.filter(user=user).order_by('id')
+        paginator = CustomPagination()
+        paginated_subscriptions = paginator.paginate_queryset(subscriptions,
+                                                              request)
+        serializer = SubscribeSerializer(
+            paginated_subscriptions,
+            context={'limit': request.GET.get('recipes_limit')},
+            many=True
+        )
+        return Response(
+            paginator.get_paginated_response(serializer.data).data,
+            status=status.HTTP_201_CREATED
+        )
