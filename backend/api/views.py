@@ -1,7 +1,7 @@
 import io
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists
+from django.db.models import Count, Exists, OuterRef
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from reportlab.lib.pagesizes import A4
@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from foodgram.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+from foodgram.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                              ShoppingList, Subscription, Tag)
 
 from .filters import NameSearchFilter, RecipeFilter
@@ -34,7 +34,17 @@ class TagViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    queryset = Recipe.objects.prefetch_related('ingredients').order_by('id')
+    queryset = Recipe.objects.prefetch_related('ingredients').annotate(
+        is_favorited=Exists(Favorite.objects.filter(
+            recipe=OuterRef('pk'),
+            user=OuterRef('favorite__user')
+        ))
+    ).annotate(
+        is_in_shopping_cart=Exists(ShoppingList.objects.filter(
+            recipe=OuterRef('pk'),
+            user=OuterRef('shopping_cart__user')
+        ))
+    ).order_by('-id')
     serializer_class = RecipeSerializer
     filter_class = RecipeFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -68,7 +78,7 @@ class RecipeViewSet(ModelViewSet):
         shopping_list = ShoppingList.objects.filter(user=user)
         ingredients = dict()
         for ind, shopping_list_recipe in enumerate(shopping_list):
-            recipe_ingredients = IngredientAmount.objects.filter(
+            recipe_ingredients = RecipeIngredient.objects.filter(
                 recipe=shopping_list_recipe.recipe
             )
             for ingredient in recipe_ingredients:
@@ -88,10 +98,7 @@ class RecipeViewSet(ModelViewSet):
         )
 
     def add_obj(self, model, request, pk):
-        if not bool(Exists(model.objects.filter(
-                user=request.user,
-                recipe=pk
-        )).queryset):
+        if not model.objects.filter(user=request.user, recipe=pk).exists():
             obj = model.objects.create(
                 user=request.user,
                 recipe=get_object_or_404(Recipe, id=pk)
@@ -123,16 +130,20 @@ class SubscribeDetail(APIView):
         user = request.user
         if user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        subscription_exist = bool(Exists(Subscription.objects.filter(
+        subscription_exist = Subscription.objects.filter(
             user=user,
             author=author
-        )).queryset)
+        ).exists()
+
         if user == author or subscription_exist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        subscribe = Subscription.objects.create(user=user, author=author)
+        subscribe = Subscription.objects.create(
+            user=user,
+            author=author
+        )
         serializer = SubscribeSerializer(
             subscribe,
-            context={'limit': request.GET.get('recipes_limit')}
+            context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -151,13 +162,25 @@ class SubscriptionsList(APIView):
         user = request.user
         if user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        subscriptions = Subscription.objects.filter(user=user).order_by('id')
+        subscriptions = Subscription.objects.filter(
+            user=user
+        ).prefetch_related('author').annotate(
+            recipes_count=Count('author__recipe')
+        ).annotate(
+            is_subscribed=Exists(Subscription.objects.filter(
+                user=user,
+                author=OuterRef('author')
+            ))
+        ).order_by('-id')
+
         paginator = CustomPagination()
-        paginated_subscriptions = paginator.paginate_queryset(subscriptions,
-                                                              request)
+        paginated_subscriptions = paginator.paginate_queryset(
+            subscriptions,
+            request
+        )
         serializer = SubscribeSerializer(
             paginated_subscriptions,
-            context={'limit': request.GET.get('recipes_limit')},
+            context={'request': request},
             many=True
         )
         return Response(

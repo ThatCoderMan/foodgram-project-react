@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
-from .models import (Favorite, Ingredient, IngredientAmount, Recipe,
+from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingList, Subscription, Tag)
 
 User = get_user_model()
@@ -19,11 +19,11 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class IngredientInline(admin.TabularInline):
-    model = IngredientAmount
+    model = RecipeIngredient
 
 
-@admin.register(IngredientAmount)
-class IngredientAmountAdmin(admin.ModelAdmin):
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
     list_filter = ('recipe', 'ingredient', 'amount')
 
 

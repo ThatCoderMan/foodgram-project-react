@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Exists
-from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import permissions, serializers
 
-from foodgram.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+from foodgram.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                              Subscription, Tag)
 from users.serializers import CustomUserSerializer
 
@@ -31,16 +29,16 @@ class IngredientsAmountSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'name', 'measurement_unit', 'amount')
-        model = IngredientAmount
+        model = RecipeIngredient
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    is_favorited = serializers.SerializerMethodField(read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+    is_favorited = serializers.BooleanField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientsAmountSerializer(
-        source='ingredientamount_set',
+        source='RecipeIngredient_set',
         many=True,
         read_only=True
     )
@@ -52,18 +50,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'cooking_time')
         model = Recipe
         permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get_is_favorited(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return bool(Exists(obj.favorite.filter(user=user)).queryset)
-
-    def get_is_in_shopping_cart(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return bool(Exists(obj.shopping_cart.filter(user=user)).queryset)
 
     def validate(self, data):
         data['author'] = self.context['request'].user
@@ -80,16 +66,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         if not isinstance(ingredients, list):
             raise serializers.ValidationError('ingredients must be list')
         valid_ingredients = []
-        for ingredient in ingredients:
-            ingredient_object = get_object_or_404(
-                Ingredient,
-                id=ingredient.get('id')
-            )
+        ingredient_objects = Ingredient.objects.filter(
+            id__in=[ingredient.get('id') for ingredient in ingredients]
+        )
+        if len(ingredient_objects) != len(ingredients):
+            raise serializers.ValidationError('invalid ingredient')
+        for ing_obj, ingredient in zip(ingredient_objects, ingredients):
             amount = int(ingredient.get('amount'))
-            if not isinstance(amount, int) or amount < 1:
+            if amount < 1:
                 raise serializers.ValidationError('invalid amount')
             valid_ingredients.append(
-                {'ingredient': ingredient_object, 'amount': amount}
+                {'ingredient': ing_obj, 'amount': amount}
             )
         data['ingredients'] = valid_ingredients
         return data
@@ -98,8 +85,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
-        IngredientAmount.objects.bulk_create([
-            IngredientAmount(
+        RecipeIngredient.objects.bulk_create([
+            RecipeIngredient(
                 recipe=recipe,
                 ingredient=ingredient['ingredient'],
                 amount=ingredient['amount']
@@ -123,13 +110,16 @@ class RecipeSerializer(serializers.ModelSerializer):
             instance.tags.set(tags)
 
         if ingredients:
+            RecipeIngredient.objects.filter(recipe=instance).delete()
             instance.ingredients.clear()
-            for ingredient in ingredients:
-                IngredientAmount.objects.get_or_create(
+            RecipeIngredient.objects.bulk_create([
+                RecipeIngredient(
                     recipe=instance,
                     ingredient=ingredient['ingredient'],
                     amount=ingredient['amount']
                 )
+                for ingredient in ingredients
+            ])
         instance.save()
         return instance
 
@@ -151,8 +141,8 @@ class SubscribeSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField(read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -160,20 +150,24 @@ class SubscribeSerializer(serializers.ModelSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_is_subscribed(self, obj):
+        if self.context.get('request').method == 'GET':
+            return obj.is_subscribed
         user = obj.user
         if user.is_anonymous:
             return False
-        return bool(Exists(Subscription.objects.filter(
+        return Subscription.objects.filter(
             user=user,
             author=obj.author
-        )).queryset)
+        ).exists()
 
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(author=obj.author)
-        limit = self.context['limit']
+        limit = self.context.get('request').GET.get('recipes_limit')
         if limit:
             recipes = recipes[:int(limit)]
         return ShortRecipeSerializer(recipes, many=True).data
 
     def get_recipes_count(self, obj):
+        if self.context.get('request').method == 'GET':
+            return obj.recipes_count
         return Recipe.objects.filter(author=obj.author).count()

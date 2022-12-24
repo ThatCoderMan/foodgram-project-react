@@ -60,7 +60,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='recipe_ingredients',
-        through='foodgram.IngredientAmount',
+        through='foodgram.RecipeIngredient',
         verbose_name='ингредиенты рецепта'
     )
     tags = models.ManyToManyField(
@@ -77,7 +77,7 @@ class Recipe(models.Model):
         return self.name
 
 
-class IngredientAmount(models.Model):
+class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(
         Ingredient,
