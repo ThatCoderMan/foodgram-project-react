@@ -10,3 +10,12 @@
 
 - добавьте в файл README.md адрес сервера, на котором запущен ваш проект (укажите IP или доменное имя), а также логин и
   пароль администратора. Это нужно, чтобы ревьюер мог проверить работу админки.
+
+- Username: `FoodGramAdmin`
+- Email:    `food@gram.com`
+- password: `9rmN*QgEy06B`
+
+
+alex@bel.com    Dj8o8EWFh98(W(E*908
+kate@orl.com    ONIfjose0*3802
+ivan@sid.com    Nof9jsoe9jofies

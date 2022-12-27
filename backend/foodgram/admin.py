@@ -24,7 +24,7 @@ class IngredientInline(admin.TabularInline):
 
 @admin.register(RecipeIngredient)
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_filter = ('recipe', 'ingredient', 'amount')
+    list_display = ('recipe', 'ingredient', 'amount')
 
 
 @admin.register(Recipe)
