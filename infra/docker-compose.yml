@@ -3,7 +3,7 @@ version: '3.3'
 services:
   frontend:
     build:
-      context: artemiiru/foodgram-frontend
+      context: artemiiru/foodgram-frontend:latest
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
