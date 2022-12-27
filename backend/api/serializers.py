@@ -41,7 +41,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientsAmountSerializer(
         source='recipeingredient_set',
-        many=True
+        many=True,
+        read_only=True
     )
     image = Base64ImageField()
 

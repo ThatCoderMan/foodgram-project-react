@@ -58,12 +58,10 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker-compose stop
-            sudo docker-compose rm artemii_backend_1
-            sudo docker-compose rm artemii_frontend_1
-            sudo docker-compose rmi artemiiru/foodgram-frontend:latest
-            sudo docker-compose rmi artemiiru/foodgram-project-react:latest
-            sudo docker-compose pull artemiiru/foodgram-project-react:latest
-            sudo docker-compose pull artemiiru/foodgram-frontend:latest
+            sudo docker rm artemii_backend_1 -f
+            sudo docker rm artemii_frontend_1 -f
+            sudo docker rmi artemiiru/foodgram-project-react:latest -f
+            sudo docker rmi artemiiru/foodgram-frontend:latest -f
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
