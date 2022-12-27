@@ -2,8 +2,7 @@ from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import permissions, serializers
 
-from foodgram.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                             Subscription, Tag)
+from foodgram.models import Favorite, Ingredient, Recipe, RecipeIngredient, Tag
 from users.serializers import CustomUserSerializer
 
 User = get_user_model()
@@ -33,8 +32,11 @@ class IngredientsAmountSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    is_favorited = serializers.BooleanField(read_only=True)
-    is_in_shopping_cart = serializers.BooleanField(read_only=True)
+    is_favorited = serializers.BooleanField(read_only=True, default=False)
+    is_in_shopping_cart = serializers.BooleanField(
+        read_only=True,
+        default=False
+    )
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientsAmountSerializer(
@@ -150,15 +152,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_is_subscribed(self, obj):
-        if self.context.get('request').method == 'GET':
-            return obj.is_subscribed
-        user = obj.user
-        if user.is_anonymous:
-            return False
-        return Subscription.objects.filter(
-            user=user,
-            author=obj.author
-        ).exists()
+        is_subscribed = self.context.get('is_subscribed')
+        if is_subscribed is not None:
+            return is_subscribed
+        return obj.is_subscribed
 
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(author=obj.author)
@@ -168,6 +165,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return ShortRecipeSerializer(recipes, many=True).data
 
     def get_recipes_count(self, obj):
-        if self.context.get('request').method == 'GET':
-            return obj.recipes_count
-        return Recipe.objects.filter(author=obj.author).count()
+        recipes_count = self.context.get('recipes_count')
+        if recipes_count is not None:
+            return recipes_count
+        return obj.recipes_count

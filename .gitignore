@@ -134,3 +134,6 @@ dmypy.json
 # static and media paths
 /backend/static
 /backend/media
+
+
+.DS_Store
