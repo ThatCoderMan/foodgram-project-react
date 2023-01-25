@@ -191,5 +191,5 @@ class SubscriptionViewSet(GenericViewSet):
         )
         return Response(
             paginator.get_paginated_response(serializer.data).data,
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_200_OK
         )
