@@ -13,3 +13,4 @@
 - Docker compose 
 - Nginx
 - Postgresql
+- GitHub workflows
