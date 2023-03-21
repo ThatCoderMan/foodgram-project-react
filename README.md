@@ -1,4 +1,5 @@
 # FoodGram
+![workflows](https://github.com/ThatCoderMan/foodgram-project-react/actions/workflows/workflow.yml/badge.svg)
 
 ## Практика написания backend для сайта на react. 
 
