@@ -43,31 +43,35 @@ jobs:
           context: ./backend
           push: true
           tags: artemiiru/foodgram-project-react:latest
-
-  deploy:
-    if: github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-    needs: build_and_push_to_docker_hub
-    steps:
-      - name: executing remote ssh commands to deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          script: |
-            sudo docker-compose stop
-            sudo docker rm artemii_backend_1 -f
-            sudo docker rm artemii_frontend_1 -f
-            sudo docker rmi artemiiru/foodgram-project-react:latest -f
-            sudo docker rmi artemiiru/foodgram-frontend:latest -f
-            touch .env
-            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
-            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-            sudo docker-compose up -d
+    
+    covered:
+      - name: Upload coverage reports to Codecov
+        env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3
+#  deploy:
+#    if: github.ref == 'refs/heads/master'
+#    runs-on: ubuntu-latest
+#    needs: build_and_push_to_docker_hub
+#   steps:
+#     - name: executing remote ssh commands to deploy
+#       uses: appleboy/ssh-action@master
+#       with:
+#         host: ${{ secrets.HOST }}
+#         username: ${{ secrets.USER }}
+#         key: ${{ secrets.SSH_KEY }}
+#         passphrase: ${{ secrets.PASSPHRASE }}
+#         script: |
+#           sudo docker-compose stop
+#           sudo docker rm artemii_backend_1 -f
+#           sudo docker rm artemii_frontend_1 -f
+#           sudo docker rmi artemiiru/foodgram-project-react:latest -f
+#           sudo docker rmi artemiiru/foodgram-frontend:latest -f
+#           touch .env
+#           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+#           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+#           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+#           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+#           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+#           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+#           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+#           sudo docker-compose up -d
