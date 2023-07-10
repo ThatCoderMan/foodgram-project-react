@@ -1,0 +1,14 @@
+[run]
+command_line =
+    manage.py test -v 2
+source =
+    users
+    api
+    app
+    foodgram
+
+[report]
+omit =
+    */migrations/*
+    */apps.py
+    */wsgi.py

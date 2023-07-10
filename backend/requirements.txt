@@ -22,3 +22,4 @@ Pillow==9.3.0
 reportlab
 gunicorn==20.0.4
 drf-extra-fields==3.4.1
+coverage==7.2.7

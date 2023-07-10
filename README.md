@@ -1,3 +1,8 @@
+[![coverage](https://img.shields.io/codecov/c/github/ThatCoderMan/foodgram-project-react.svg)](https://app.codecov.io/gh/ThatCoderMan/foodgram-project-react)
+![workflows](https://github.com/ThatCoderMan/foodgram-project-react/actions/workflows/workflow.yml/badge.svg)
+![workflows](https://github.com/ThatCoderMan/foodgram-project-react/actions/workflows/deploy.yml/badge.svg)
+
+
 ## FoodGram
 
 - Username: `FoodGramAdmin`
