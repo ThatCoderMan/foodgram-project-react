@@ -23,9 +23,7 @@ jobs:
         python -m flake8
         coverage run && coverage report --fail-under=75 && coverage xml
     - name: Upload coverage reports to Codecov
-      env:
-        CODECOV_TOKEN: 268b221d-4303-4aaf-a6c4-213ac1dcc6e7
       uses: codecov/codecov-action@v3
       with:
-        token: 268b221d-4303-4aaf-a6c4-213ac1dcc6e7
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: backend/coverage.xml
