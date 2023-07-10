@@ -1,11 +1,17 @@
 name: deploy
-on: [push]
+on:
+  [push]
+  workflow_run:
+    workflows:
+      - "workflow1"
+    types:
+      - completed
+
 
 jobs:
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    needs: tests
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
