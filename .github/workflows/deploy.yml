@@ -3,7 +3,7 @@ on:
   [push]
   workflow_run:
     workflows:
-      - "workflow1"
+      - "workflows"
     types:
       - completed
 
