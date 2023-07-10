@@ -1,12 +1,12 @@
 name: deploy
 on:
-  [push]
   workflow_run:
     workflows:
       - "workflows"
     types:
       - completed
-
+    branches:
+      - 'master'
 
 jobs:
   build_and_push_to_docker_hub:
