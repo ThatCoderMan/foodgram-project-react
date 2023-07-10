@@ -28,7 +28,7 @@ jobs:
           tags: artemiiru/foodgram-project-react:latest
 
   deploy:
-    if: github.ref == 'refs/heads/master' & ${{ secrets.HOST }} != 'None'
+    if: github.ref == 'refs/heads/master' && ${{ secrets.HOST }} != 'None'
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
     steps:
