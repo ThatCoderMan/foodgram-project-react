@@ -1,5 +1,4 @@
 import os
-from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -9,7 +8,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'SecretKey')
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -113,12 +112,6 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'],
 }
-
-
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(days=14),
-#     'AUTH_HEADER_TYPES': ('Bearer',),
-# }
 
 DJOSER = {
     'LOGIN_FIELD': 'email',

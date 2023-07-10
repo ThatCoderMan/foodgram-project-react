@@ -1,12 +1,9 @@
-from http import HTTPStatus
-
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase, override_settings
-from django.urls import reverse
-from rest_framework.test import APIClient
+from django.test import TestCase
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
-from foodgram.models import Tag, Recipe, Ingredient, RecipeIngredient
+from foodgram.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
 
@@ -69,7 +66,7 @@ class ResponseSchemaTest(TestCase):
             author=cls.user,
             name='test',
             text='test',
-            image='test.png',  # todo: add image
+            image='test.png',
             cooking_time=1
         )
         RecipeIngredient.objects.create(
@@ -85,7 +82,7 @@ class ResponseSchemaTest(TestCase):
         auth_token = f'Token {str(auth_token[0])}'
         cls.authorized_client.credentials(HTTP_AUTHORIZATION=auth_token)
 
-    def assertIsInstance(self, obj, cls, item_name=None):
+    def assertIsInstance(self, obj, cls, item_name=None):  # noqa
         if item_name is not None:
             super().assertIsInstance(
                 obj,
@@ -155,14 +152,14 @@ class ResponseSchemaTest(TestCase):
         self.schema_check(schema, request_objects)
 
     def test_users_response_schema(self):
-        test_url = f'/api/users/'
+        test_url = '/api/users/'
         schema = self.author_schema
         request = self.authorized_client.get(test_url)
         request_objects = request.json()
         self.paginated_list_schema_check(schema, request_objects)
 
     def test_user_me_response_schema(self):
-        test_url = f'/api/users/me/'
+        test_url = '/api/users/me/'
         schema = self.author_schema
         request = self.authorized_client.get(test_url)
         request_objects = request.json()
@@ -186,7 +183,7 @@ class ResponseSchemaTest(TestCase):
 
     def test_ingredients_response_schema(self):
         """Проверка доступности адресов доступных всем пользователям."""
-        test_url = f'/api/ingredients/'
+        test_url = '/api/ingredients/'
         schema = self.ingredient_schema.copy()
         schema.pop('amount')
         request = self.not_authorized_client.get(test_url)
@@ -217,4 +214,3 @@ class ResponseSchemaTest(TestCase):
         request = self.not_authorized_client.get(test_url)
         request_obj = request.json()
         self.schema_check(schema, request_obj)
-

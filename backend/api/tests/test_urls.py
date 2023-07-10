@@ -1,12 +1,11 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
-from django.urls import reverse
-from rest_framework.test import APIClient
+from django.test import TestCase
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
-from foodgram.models import Tag, Recipe, Ingredient
+from foodgram.models import Ingredient, Recipe, Tag
 
 User = get_user_model()
 
@@ -16,7 +15,10 @@ class URLAccessTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        user = User.objects.create_user(username='testuser',  password='testpassword')
+        user = User.objects.create_user(
+            username='testuser',
+            password='testpassword'
+        )
         cls.tag_object = Tag.objects.create(
             name='test',
             color='#FFFFFF',
