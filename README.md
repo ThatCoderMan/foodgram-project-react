@@ -9,14 +9,14 @@
 
 - Python 3.7
 - Django 2.1
-- DRF 
+- Django REST Framework 
 - Djoser 
 - Pillow
-- Docker compose 
+- Docker Compose 
 - Gunicorn
 - Nginx
-- Postgresql
-- GitHub workflows
+- PostgresQL
+- GitHub Actions
 
 </details>
 
